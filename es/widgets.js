@@ -404,7 +404,7 @@ function openEditDialog(opts, d) {
 	$('#node_properties').dialog({
 	    autoOpen: false,
 	    title: d.data.display_name,
-	    width: ($(window).width() > 400 ? 450 : $(window).width()- 30)
+	    width: $(window).width()
 	});
 
 	let table = "<table id='person_details' class='table'>";
@@ -414,7 +414,7 @@ function openEditDialog(opts, d) {
 	table += "<tr><td style='text-align:right'>Name</td><td><input class='form-control' type='text' id='id_display_name' name='display_name' value="+
 			(d.data.display_name ? d.data.display_name : "")+"></td></tr>";
 
-	table += "<tr><td style='text-align:right'>Age</td><td><input class='form-control' type='number' id='id_age' min='0' max='120' name='age' style='width:7em' value="+
+	table += "<tr><td style='text-align:right'>PALLE</td><td><input class='form-control' type='number' id='id_age' min='0' max='120' name='age' style='width:7em' value="+
 			(d.data.age ? d.data.age : "")+"></td></tr>";
 
 	table += "<tr><td style='text-align:right'>Year Of Birth</td><td><input class='form-control' type='number' id='id_yob' min='1900' max='2050' name='yob' style='width:7em' value="+

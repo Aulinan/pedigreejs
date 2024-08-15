@@ -14,7 +14,7 @@ export default {
 	    	include: 'es/**'
 	    }),
 	    babel({ babelHelpers: 'bundled', sourceMap: true, inputSourceMap: false }),
-	    postcss({ extract: true, minimize: true })
+	    postcss({ extract: true, minimize: false })
 	  ],
   output: [{
 	    name: 'pedigreejs',

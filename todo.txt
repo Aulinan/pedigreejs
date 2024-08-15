@@ -1,0 +1,9 @@
+Modifiche da fare:
+1. Malattie min 10, aggiungere colori , possibilità di scrivere le patologie
+2.Spostare form al lato fisso
+3.Legenda ben visibile
+4. possibilità di creare pedigree da form
+5.Cambiare bottoni su nodi
+6.Aggiustare bottoni
+7. Muoversi con la tastiera tra i nodi
+8.Forse spostare i nodi

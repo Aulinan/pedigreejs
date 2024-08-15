@@ -240,6 +240,7 @@ export function addWidgets(opts, node) {
 
 		let newdataset;
 		if(opt === 'settings') {
+			console.log(opts)
 			if(typeof opts.edit === 'function') {
 				opts.edit(opts, d);
 			} else {
@@ -404,7 +405,11 @@ function openEditDialog(opts, d) {
 	$('#node_properties').dialog({
 	    autoOpen: false,
 	    title: d.data.display_name,
-	    width: $(window).width()
+	    width: $(window).width()/4, //A: change later. Size of options
+		height: $(window).height(),
+		position : {my: "right center", at: "right center",of: window},
+		draggable : false,
+		resizable : false
 	});
 
 	let table = "<table id='person_details' class='table'>";
@@ -414,7 +419,7 @@ function openEditDialog(opts, d) {
 	table += "<tr><td style='text-align:right'>Name</td><td><input class='form-control' type='text' id='id_display_name' name='display_name' value="+
 			(d.data.display_name ? d.data.display_name : "")+"></td></tr>";
 
-	table += "<tr><td style='text-align:right'>PALLE</td><td><input class='form-control' type='number' id='id_age' min='0' max='120' name='age' style='width:7em' value="+
+	table += "<tr><td style='text-align:right'>Age</td><td><input class='form-control' type='number' id='id_age' min='0' max='120' name='age' style='width:7em' value="+
 			(d.data.age ? d.data.age : "")+"></td></tr>";
 
 	table += "<tr><td style='text-align:right'>Year Of Birth</td><td><input class='form-control' type='number' id='id_yob' min='1900' max='2050' name='yob' style='width:7em' value="+
@@ -456,12 +461,16 @@ function openEditDialog(opts, d) {
 	table += '<tr><td colspan="2"><strong>Age of Diagnosis:</strong></td></tr>';
 	$.each(opts.diseases, function(k, v) {
 		exclude.push(v.type+"_diagnosis_age");
+		console.log(opts.diseases)
 
 		let disease_colour = '&thinsp;<span style="padding-left:5px;background:'+opts.diseases[k].colour+'"></span>';
 		let diagnosis_age = d.data[v.type + "_diagnosis_age"];
 
-		table += "<tr><td style='text-align:right'>"+capitaliseFirstLetter(v.type.replace("_", " "))+
-					disease_colour+"&nbsp;</td><td>" +
+		table += "<tr><td style='text-align:right'><input id='id_"
+						 + v.type + "_disease_type_0' class ='form-control' type='text' style='width:70%' placeholder='disease' value='"
+						 +(opts.diseases[k].type  ? opts.diseases[k].type : "" )+"'>"+
+						                  //A: change size form disease
+					disease_colour +"&nbsp;</td><td>" +
 					"<input class='form-control' id='id_" +
 					v.type + "_diagnosis_age_0' max='110' min='0' name='" +
 					v.type + "_diagnosis_age_0' style='width:5em' type='number' value='" +

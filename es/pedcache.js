@@ -27,13 +27,15 @@ function has_browser_storage(opts) {
 	}
 }
 
-function get_prefix(opts) {
-	return "PEDIGREE_"+opts.btn_target+"_";
+function get_prefix(opts,cache) {
+	if (cache === opts.disease) 
+		return "PEDIGREE_"+opts.btn_target+"_";
+	return "PEDIGREE_"+opts.disease_target+"_"
 }
 
 // use dict_cache to store cache as an array
-function get_arr(opts) {
-	return dict_cache[get_prefix(opts)];
+function get_arr(opts,cache) {
+	return dict_cache[get_prefix(opts,cache)];
 }
 
 function get_browser_store(opts, item) {
@@ -59,8 +61,8 @@ function clear_browser_store(opts) {
 }
 
 // remove all storage items with keys that have the pedigree history prefix
-export function clear_pedigree_data(opts) {
-	let prefix = get_prefix(opts);
+export function clear_pedigree_data(opts,cache) {
+	let prefix = get_prefix(opts,cache);
 	let store = (opts.store_type === 'local' ? localStorage : sessionStorage);
 	let items = [];
 	for(let i = 0; i < store.length; i++){
@@ -71,48 +73,48 @@ export function clear_pedigree_data(opts) {
 		store.removeItem(items[i]);
 }
 
-export function get_count(opts) {
+export function get_count(opts,cache) {
 	let count;
 	if (has_browser_storage(opts))
 		count = get_browser_store(opts, get_prefix(opts)+'COUNT');
 	else
-		count = dict_cache[get_prefix(opts)+'COUNT'];
+		count = dict_cache[get_prefix(opts,cache)+'COUNT'];
 	if(count !== null && count !== undefined)
 		return count;
 	return 0;
 }
 
-function set_count(opts, count) {
+function set_count(opts, count,cache) {
 	if (has_browser_storage(opts))
-		set_browser_store(opts, get_prefix(opts)+'COUNT', count);
+		set_browser_store(opts, get_prefix(opts,cache)+'COUNT', count);
 	else
-		dict_cache[get_prefix(opts)+'COUNT'] = count;
+		dict_cache[get_prefix(opts,cache)+'COUNT'] = count;
 }
 
-export function init_cache(opts) {
-	if(!opts.dataset)
+export function init_cache(opts, cache) {
+	if(!cache)
 		return;
-	let count = get_count(opts);
+	let count = get_count(opts,cache);
 	if (has_browser_storage(opts)) {   // local storage
-		set_browser_store(opts, get_prefix(opts)+count, JSON.stringify(opts.dataset));
+		set_browser_store(opts, get_prefix(opts,cache)+count, JSON.stringify(cache));
 	} else {   // TODO :: array cache
 		console.warn('Local storage not found/supported for this browser!', opts.store_type);
 		max_limit = 500;
-		if(get_arr(opts) === undefined)
-			dict_cache[get_prefix(opts)] = [];
-		get_arr(opts).push(JSON.stringify(opts.dataset));
+		if(get_arr(opts,cache) === undefined)
+			dict_cache[get_prefix(opts,cache)] = [];
+		get_arr(opts,cache).push(JSON.stringify(cache));
 	}
 	if(count < max_limit)
 		count++;
 	else
 		count = 0;
-	set_count(opts, count);
+	set_count(opts, count,cache);
 }
 
-export function nstore(opts) {
+export function nstore(opts,cache) {
 	if(has_browser_storage(opts)) {
 		for(let i=max_limit; i>0; i--) {
-			if(get_browser_store(opts, get_prefix(opts)+(i-1)) !== null)
+			if(get_browser_store(opts, get_prefix(opts,cache)+(i-1)) !== null)
 				return i;
 		}
 	} else {
@@ -121,39 +123,39 @@ export function nstore(opts) {
 	return -1;
 }
 
-export function current(opts) {
-	let current = get_count(opts)-1;
+export function current(opts,cache) {
+	let current = get_count(opts,cache)-1;
 	if(current === -1)
 		current = max_limit;
 	if(has_browser_storage(opts))
-		return JSON.parse(get_browser_store(opts, get_prefix(opts)+current));
-	else if(get_arr(opts))
-		return JSON.parse(get_arr(opts)[current]);
+		return JSON.parse(get_browser_store(opts, get_prefix(opts,cache)+current));
+	else if(get_arr(opts,cache))
+		return JSON.parse(get_arr(opts,cache)[current]);
 }
 
-export function last(opts) {
+export function last(opts,cache) {
 	if(has_browser_storage(opts)) {
 		for(let i=max_limit; i>0; i--) {
-			let it = get_browser_store(opts, get_prefix(opts)+(i-1));
+			let it = get_browser_store(opts, get_prefix(opts,cache)+(i-1));
 			if(it !== null) {
-				set_count(opts, i);
+				set_count(opts, i,cache);
 				return JSON.parse(it);
 			}
 		}
 	} else {
-		let arr = get_arr(opts);
+		let arr = get_arr(opts,cache);
 		if(arr)
 			return JSON.parse(arr(arr.length-1));
 	}
 	return undefined;
 }
 
-export function previous(opts, previous) {
+export function previous(opts, previous,cache) {
 	if(previous === undefined)
 		previous = get_count(opts) - 2;
 
 	if(previous < 0) {
-		let nst = nstore(opts);
+		let nst = nstore(opts,cache);
 		if(nst < max_limit)
 			previous = nst - 1;
 		else
@@ -161,22 +163,22 @@ export function previous(opts, previous) {
 	}
 	set_count(opts, previous + 1);
 	if(has_browser_storage(opts))
-		return JSON.parse(get_browser_store(opts, get_prefix(opts)+previous));
+		return JSON.parse(get_browser_store(opts, get_prefix(opts,cache)+previous));
 	else
-		return JSON.parse(get_arr(opts)[previous]);
+		return JSON.parse(get_arr(opts,cache)[previous]);
 }
 
-export function next(opts, next) {
+export function next(opts, next,cache) {
 	if(next === undefined)
-		next = get_count(opts);
+		next = get_count(opts,cache);
 	if(next >= max_limit)
 		next = 0;
 
 	set_count(opts, parseInt(next) + 1);
 	if(has_browser_storage(opts))
-		return JSON.parse(get_browser_store(opts, get_prefix(opts)+next));
+		return JSON.parse(get_browser_store(opts, get_prefix(opts,cache)+next));
 	else
-		return JSON.parse(get_arr(opts)[next]);
+		return JSON.parse(get_arr(opts,cache)[next]);
 }
 
 export function clear(opts) {
@@ -186,18 +188,18 @@ export function clear(opts) {
 }
 
 // zoom - store translation coords
-export function setposition(opts, x, y, zoom) {
+export function setposition(opts, x, y, zoom,cache) {
 	if(has_browser_storage(opts)) {
 		let store = (opts.store_type === 'local' ? localStorage : sessionStorage);
 		if(x) {
-			set_browser_store(opts, get_prefix(opts)+'_X', x);
-			set_browser_store(opts, get_prefix(opts)+'_Y', y);
+			set_browser_store(opts, get_prefix(opts,cache)+'_X', x);
+			set_browser_store(opts, get_prefix(opts,cache)+'_Y', y);
 		} else {
-			store.removeItem(get_prefix(opts)+'_X');
-			store.removeItem(get_prefix(opts)+'_Y');
+			store.removeItem(get_prefix(opts,cache)+'_X');
+			store.removeItem(get_prefix(opts,cache)+'_Y');
 		}
 
-		let zoomName = get_prefix(opts)+'_ZOOM';
+		let zoomName = get_prefix(opts,cache)+'_ZOOM';
 		if(zoom)
 			set_browser_store(opts, zoomName, zoom);
 		else
@@ -207,14 +209,14 @@ export function setposition(opts, x, y, zoom) {
 	}
 }
 
-export function getposition(opts) {
+export function getposition(opts,cache) {
 	if(!has_browser_storage(opts) ||
-		(localStorage.getItem(get_prefix(opts)+'_X') === null &&
-		 sessionStorage.getItem(get_prefix(opts)+'_X') === null))
+		(localStorage.getItem(get_prefix(opts,cache)+'_X') === null &&
+		 sessionStorage.getItem(get_prefix(opts,cache)+'_X') === null))
 		return [null, null];
-	let pos = [ parseInt(get_browser_store(opts, get_prefix(opts)+'_X')),
-				parseInt(get_browser_store(opts, get_prefix(opts)+'_Y')) ];
-	if(get_browser_store(opts, get_prefix(opts)+'_ZOOM') !== null)
-		pos.push(parseFloat(get_browser_store(opts, get_prefix(opts)+'_ZOOM')));
+	let pos = [ parseInt(get_browser_store(opts, get_prefix(opts,cache)+'_X')),
+				parseInt(get_browser_store(opts, get_prefix(opts,cache)+'_Y')) ];
+	if(get_browser_store(opts, get_prefix(opts,cache)+'_ZOOM') !== null)
+		pos.push(parseFloat(get_browser_store(opts, get_prefix(opts,cache)+'_ZOOM')));
 	return pos;
 }

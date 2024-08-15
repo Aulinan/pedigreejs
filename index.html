@@ -23,7 +23,7 @@
                 s.src = "https://cdn.jsdelivr.net/npm/canvg@3.0.7/lib/umd.js";
                 $("head").append(s);
             } 
-            var dataset = [
+            var dataset = [ 
 			{"name": "m11", "sex": "M", "top_level": true},
 			{"name": "f11", "display_name": "Jane",  "sex": "F", "status": 1, "top_level": true, "breast_cancer_diagnosis_age":67, "ovarian_cancer_diagnosis_age":63},
 			{"name": "m12", "sex": "M", "top_level": true},
@@ -32,31 +32,43 @@
 			{"name": "f21", "sex": "F", "mother": "f12", "father": "m12", "breast_cancer_diagnosis_age":55, "breast_cancer2_diagnosis_age": 60, "ovarian_cancer_diagnosis_age":58, "age": 63},
 			{"name": "ch1", "display_name": "Ana", "sex": "F", "mother": "f21", "father": "m21", "proband": true, "age": 25, "yob": 1996}
 		];
+			var diseases = [
+					{'type': '1', 'colour': '#F68F35'},
+					{'type': '2', 'colour': 'pink'},
+					{'type': '4', 'colour': '#306430'},
+					{'type': '3', 'colour': '#F68F35'},
+					{'type': '5', 'colour': '#4289BA'},
+					{'type': '6', 'colour': '#D5494A'},
+					{'type': '7', 'colour': '#F68F35'},
+					{'type': '8', 'colour': '#F68F35'},
+					{'type': '9', 'colour': '#F68F35'},
+					{'type': '10', 'colour': '#F68F35'}
+					];
 		$( "#pedigrees" ).append( $( "<div id='pedigree_history'></div>" ) );
 		$( "#pedigrees" ).append( $( "<div id='pedigree'></div>" ) );
 
-		var opts = {
-				'targetDiv': 'pedigree',
-				'btn_target': 'pedigree_history',
-			//	'nodeclick': pedigree_form.nodeclick,
-				'width': $(window).width()-50, // A: here to change width and heigth. The pedigree changes size too
-				'height': $(window).height()-50,
-				'symbol_size': 30,
-				'edit': true,
-				'zoomIn': .5,
-				'zoomOut': 1.5,
-				'font_size': '0.75em',
-	        	'diseases': [{'type': 'breast_cancer', 'colour': '#F68F35'}, //A: TODO change default options, and introduce ability to add more diseases
-	        				 {'type': 'breast_cancer2', 'colour': 'pink'},
-							 {'type': 'ovarian_cancer', 'colour': '#4DAA4D'},
-							 {'type': 'pancreatic_cancer', 'colour': '#4289BA'},
-							 {'type': 'prostate_cancer', 'colour': '#D5494A'}],
-				'DEBUG': (pedigreejs.pedigreejs_utils.urlParam('debug') === null ? false : true)};
-		var local_dataset = pedigreejs.pedigreejs_pedcache.current(opts);
+		var opts = 
+		{		'targetDiv': 'pedigree',
+		 		'btn_target': 'pedigree_history',
+				'disease_target':'disease_history',
+		//		'nodeclick': pedigree_form.nodeclick,
+		 		'width': $(window).width()-50, // A: here to change width and heigth. The pedigree changes size too
+		 		'height': $(window).height()-50,
+		 		'symbol_size': 30,
+		 		'edit': true,
+		 		'zoomIn': .5,
+		 		'zoomOut': 1.5,
+		 		'font_size': '0.75em',
+		 		'DEBUG': (pedigreejs.pedigreejs_utils.urlParam('debug') === null ? false : true)
+		};
+		var local_dataset = pedigreejs.pedigreejs_pedcache.current(opts,opts.dataset);
+		var local_diseases = pedigreejs.pedigreejs_pedcache.current(opts,opts.diseases)
 		if (local_dataset !== undefined && local_dataset !== null) {
 			opts.dataset = local_dataset;
+			opts.diseases = local_diseases;
 		} else {
 			opts.dataset = dataset;
+			opts.diseases = diseases;
 		}
 		opts = pedigreejs.pedigreejs.build(opts);
 

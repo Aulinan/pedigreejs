@@ -10,3 +10,21 @@
 }
 .pe-2 { padding-right: 0.75em; }
 svg {overflow:hidden}
+
+.ui-widget.ui-widget-content {
+	border:hidden
+  }
+
+  .ui-dialog {
+	box-sizing: border-box;
+	border: hidden;
+	border-radius: none ;
+	max-width: 90%;
+}
+
+.ui-widget-header {
+	border: hidden;
+	background: #deedf7;
+	color: #222;
+	font-weight: bold;
+  }

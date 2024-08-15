@@ -20,17 +20,22 @@ export function build(options) {
 		dataset: [ {"name": "m21", "display_name": "father", "sex": "M", "top_level": true},
 				   {"name": "f21", "display_name": "mother", "sex": "F", "top_level": true},
 				   {"name": "ch1", "display_name": "me", "sex": "F", "mother": "f21", "father": "m21", "proband": true}],
-		width: 600,
-		height: 400,
+		width: 1000, //A: size of peedigree
+		height: 500,
 		symbol_size: 35,
 		zoomSrc: ['wheel', 'button'],
 		zoomIn: 1.0,
 		zoomOut: 1.0,
-		diseases: [	{'type': 'breast_cancer', 'colour': '#F68F35'},
-					{'type': 'breast_cancer2', 'colour': 'pink'},
+		diseases: [	{'type': 'prova', 'colour': '#F68F35'},
+					{'type': 'prova 2', 'colour': 'pink'},
 					{'type': 'ovarian_cancer', 'colour': '#306430'},
 					{'type': 'pancreatic_cancer', 'colour': '#4289BA'},
-					{'type': 'prostate_cancer', 'colour': '#D5494A'}],
+					{'type': 'prostate_cancer', 'colour': '#D5494A'},
+					{'type': 'prova', 'colour': '#F68F35'},
+					{'type': 'prova', 'colour': '#F68F35'},
+					{'type': 'prova', 'colour': '#F68F35'},
+					{'type': 'prova', 'colour': '#F68F35'},
+					{'type': 'prova', 'colour': '#F68F35'}],
 		labels: ['stillbirth', ['age', 'yob'], 'alleles',
 							   ['brca1_gene_test', 'brca2_gene_test', 'palb2_gene_test', 'chek2_gene_test', 'atm_gene_test'],
 							   ['rad51d_gene_test', 'rad51c_gene_test', 'brip1_gene_test', 'hoxb13_gene_test'],
@@ -63,12 +68,12 @@ export function build(options) {
 	if(opts.DEBUG)
 		utils.print_opts(opts);
 	let svg_dimensions = utils.get_svg_dimensions(opts);
-	let svg = d3.select("#"+opts.targetDiv)
+	let svg = d3.select("#"+opts.targetDiv)//A: border
 				 .append("svg:svg")
 				 .attr("width", svg_dimensions.width)
 				 .attr("height", svg_dimensions.height);
 
-	svg.append("rect")
+	svg.append("rect") 
 		.attr("width", "100%")
 		.attr("height", "100%")
 		.attr("rx", 6)
@@ -77,7 +82,7 @@ export function build(options) {
 		.style("fill", opts.background) // or none
 		.style("stroke-width", 1);
 
-	let ped = svg.append("g")
+	let ped = svg.append("g") //A: groups svg elements together
 			 .attr("class", "diagram");
 
 	let top_level = $.map(opts.dataset, function(val, _i){return 'top_level' in val && val.top_level ? val : null;});
@@ -100,7 +105,7 @@ export function build(options) {
 
 	let treemap = d3.tree().separation(function(a, b) {
 		return a.parent === b.parent || a.data.hidden || b.data.hidden ? 1.2 : 2.2;
-	}).size([tree_dimensions.width, tree_dimensions.height]);
+	}).size([tree_dimensions.width, tree_dimensions.height]);//vedi qui
 
 	let nodes = treemap(root.sort(function(a, b) { return a.data.id - b.data.id; }));
 	let flattenNodes = nodes.descendants();
